@@ -336,3 +336,12 @@ html[lang=ur] .chips button{font-family:var(--urdu)}
   .lang button{padding:6px 7px;font-size:.74rem}
   .top .in{gap:4px 8px}
 }
+
+/* transparent logo: no box, just a soft light glow behind it */
+.logocard{background:radial-gradient(closest-side,rgba(251,252,247,.97) 58%,rgba(251,252,247,0) 100%);border-radius:0;box-shadow:none;transform:none;padding:8% 6%;width:min(100%,460px)}
+.logocard img{border-radius:0}
+.brand img{background:var(--card);border-radius:50%;padding:2px}
+
+.logoband{background:#fbfcf7;text-align:center;padding:18px 16px 14px;border-bottom:3px solid var(--maize)}
+.logoband img{display:block;margin:0 auto;width:min(100%,440px);height:auto}
+.hero .wrap{grid-template-columns:1fr}
