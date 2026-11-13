@@ -1,5 +1,5 @@
-import { DEFAULT_ITEMS, DEFAULT_SHOP } from "./defaults.js";
-export { DEFAULT_ITEMS, DEFAULT_SHOP };
+import { DEFAULT_ITEMS, DEFAULT_SHOP, CATEGORIES } from "./defaults.js";
+export { DEFAULT_ITEMS, DEFAULT_SHOP, CATEGORIES };
 
 export const $ = (s, r = document) => r.querySelector(s);
 export const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -59,6 +59,14 @@ addStrings({
   c_perbag: ["Per bori", "فی بوری", "Fi bori"],
   c_kg: ["kg", "کلو", "kg"],
   c_bori: ["bori", "بوری", "bori"],
+  c_perpc: ["Per piece", "فی عدد", "Fi adad"],
+  c_pc: ["pc", "عدد", "adad"],
+  n_products: ["Products", "مصنوعات", "Maal"],
+  n_lab: ["Lab Reports", "لیب رپورٹس", "Lab Reports"],
+  n_formula: ["Formulas", "فارمولے", "Formulas"],
+  n_balance: ["Feed Balancing", "فیڈ بیلنسنگ", "Feed Balancing"],
+  n_bill: ["Bill Maker", "بل میکر", "Bill Maker"],
+  c_all: ["All", "سب", "Sab"],
   c_pending: ["To be added", "جلد شامل ہوگا", "Jald add hoga"],
 });
 
@@ -73,8 +81,24 @@ export function applyLang() {
 }
 
 export function initLang() {
+  mountHeader();
   $$(".lang button").forEach((b) => b.addEventListener("click", () => setLang(b.dataset.l)));
   applyLang();
+}
+
+export const catName = (id) => { const c = CATEGORIES.find((x) => x.id === id); return c ? (lang === "ur" ? c.ur : lang === "en" ? c.en : c.ro) : ""; };
+export const catDesc = (id) => { const c = CATEGORIES.find((x) => x.id === id); return c ? c.d[lang] || c.d.en : ""; };
+
+/* ---------- shared header: <header class="top" id="top"> ---------- */
+const NAV = [["/products", "n_products"], ["/lab-reports", "n_lab"], ["/formulas", "n_formula"], ["/balancing", "n_balance"], ["/bill", "n_bill"]];
+export function mountHeader() {
+  const h = document.getElementById("top");
+  if (!h) return;
+  const here = location.pathname.replace(/\/$/, "").replace(/\.html$/, "");
+  h.innerHTML = `<div class="in"><a class="brand" href="/" aria-label="AB Traders"><img src="/img/mark.png" width="36" height="36" alt="">AB <b>Traders</b></a>
+  <nav class="nav" aria-label="Main">${NAV.map(([u, k]) => `<a href="${u}" data-t="${k}"${here === u ? ' aria-current="page"' : ""}></a>`).join("")}</nav>
+  <span class="spacer"></span>
+  <div class="lang" role="group" aria-label="Language"><button type="button" data-l="en">English</button><button type="button" data-l="ur">اردو</button><button type="button" data-l="ro">Roman</button></div></div>`;
 }
 
 /* ---------- item helpers ---------- */
@@ -106,6 +130,15 @@ export async function loadItems({ noimg = false } = {}) {
   } catch {
     return { items: store.get("abt-items") || DEFAULT_ITEMS, source: "offline", db: false };
   }
+}
+
+// Public lists kept in the database: lab reports and saved formulas.
+export async function loadList(name) {
+  try {
+    const j = await api("/api/" + name);
+    store.set("abt-" + name, j.list);
+    return j.list;
+  } catch { return store.get("abt-" + name) || []; }
 }
 
 export async function loadShop() {

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dairy Feed Balancing Calculator (Cow & Buffalo Ration) | AB Trader</title>
+<meta name="description" content="Free dairy feed balancing tool: enter body weight and milk yield, pick ingredients, check energy, protein, fibre and daily cost, or auto-find the cheapest ration. Roman Urdu, Urdu, English.">
+<meta name="keywords" content="feed balancing, dairy ration calculator, cow feed calculator, buffalo ration, least cost ration, فیڈ بیلنسنگ">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#0c3323">
+<link rel="canonical" href="https://abtrader.pk/balancing">
+<link rel="icon" href="/img/icon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/img/icon-48.png" sizes="48x48" type="image/png">
+<link rel="apple-touch-icon" href="/img/icon-180.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Dairy Feed Balancing Calculator (Cow & Buffalo Ration) | AB Trader">
+<meta property="og:description" content="Free dairy feed balancing tool: enter body weight and milk yield, pick ingredients, check energy, protein, fibre and daily cost, or auto-find the cheapest ration. Roman Urdu, Urdu, English.">
+<meta property="og:url" content="https://abtrader.pk/balancing">
+<meta property="og:image" content="https://abtrader.pk/img/logo.jpg">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Hanken+Grotesk:wght@400;600;700&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<header class="top" id="top"></header>
+<div class="pagehead"><div class="wrap"><h1 data-t="bl_h">Feed Balancing</h1><p data-t="bl_p">Check a daily ration for a milking cow or buffalo.</p></div></div>
+<main class="wrap pg bal">
+  <section class="card" aria-labelledby="bl-a">
+    <h2 id="bl-a" data-t="bl_animal">Animal</h2>
+    <div class="grid3">
+      <div class="field"><label for="a-bw" data-tri="bl_bw"></label><input id="a-bw" type="number" min="200" max="1000" step="any" inputmode="decimal" value="550"></div>
+      <div class="field"><label for="a-milk" data-tri="bl_milk"></label><input id="a-milk" type="number" min="0" max="80" step="any" inputmode="decimal" value="20"></div>
+      <div class="field"><label for="a-fat" data-tri="bl_fat"></label><input id="a-fat" type="number" min="2" max="10" step="any" inputmode="decimal" value="4"></div>
+    </div>
+    <div class="req" id="req"></div>
+  </section>
+
+  <section class="card" aria-labelledby="bl-b">
+    <h2 id="bl-b" data-t="bl_ration">Daily ration (kg as fed, per animal)</h2>
+    <div id="rrows"></div>
+    <div class="field"><label for="add" data-tri="bl_add"></label><select id="add"></select></div>
+    <div class="acts2">
+      <button type="button" class="btn" id="auto" data-t="bl_auto">Find cheapest ration</button>
+      <button type="button" class="btn line" id="clear" data-t="bl_clear">Clear</button>
+    </div>
+    <p class="note" id="autonote" role="status"></p>
+  </section>
+
+  <section class="card" aria-labelledby="bl-c">
+    <h2 id="bl-c" data-t="bl_result">Result</h2>
+    <div id="res"></div>
+    <div class="acts2"><button type="button" class="btn line" id="wa" data-t="bl_wa">Send on WhatsApp</button><button type="button" class="btn dark" id="pub" hidden data-t="bl_pub">Publish as formula</button></div>
+  </section>
+  <p class="note" data-t="bl_disc">Typical values and rules of thumb only. Use your lab reports for exact numbers, and a nutritionist for final rations.</p>
+</main>
+<footer class="foot"><div class="wrap">© AB Trader · <span data-t="tagline">Livestock &amp; Dairy Feed Raw Material Supplier</span> · <a href="/admin" data-t="h_admin">Admin</a></div></footer>
+<script type="module" src="/js/balancing.js"></script>
+</body>
+</html>

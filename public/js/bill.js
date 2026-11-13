@@ -1,4 +1,4 @@
-import { $, $$, esc, num, nf, rs, today, dmy, sd, store, lang, addStrings, t, tri, initLang, onLang, loadItems, loadShop, itemName, itemBoth, DEFAULT_ITEMS, DEFAULT_SHOP } from "./common.js";
+import { $, $$, esc, CATEGORIES, catName, num, nf, rs, today, dmy, sd, store, lang, addStrings, t, tri, initLang, onLang, loadItems, loadShop, itemName, itemBoth, DEFAULT_ITEMS, DEFAULT_SHOP } from "./common.js";
 
 addStrings({
   tab_entry: ["Enter items", "مال لکھیں", "Maal likhein"],
@@ -58,7 +58,8 @@ if (!bill || !Array.isArray(bill.rows) || !bill.rows.length) bill = blankBill();
 const cat = (id) => items.find((c) => c.id === id);
 const rateFor = (c) => (bill.type === "udhaar" ? num(c.udhaar) || num(c.cash) : num(c.cash));
 const bagKg = (r) => num((cat(r.id) || {}).bagKg) || 40;
-const amount = (r) => (r.mode === "bag" ? num(r.bags) : num(r.weight)) * num(r.rate);
+const amount = (r) => (r.mode === "bag" || r.mode === "pc" ? num(r.bags) : num(r.weight)) * num(r.rate);
+const unitKey = (m) => (m === "bag" ? "c_bori" : m === "pc" ? "c_pc" : "c_kg");
 const live = () => bill.rows.filter((r) => r.id || r.name || num(r.bags) || num(r.weight) || num(r.rate));
 const rowName = (r) => { const c = cat(r.id); return c ? itemName(c) : r.name || "-"; };
 const typeKey = () => (bill.type === "udhaar" ? "c_udhaar" : "c_cash");
@@ -74,17 +75,20 @@ function rowsHTML() {
   return bill.rows.map((r, i) => {
     const known = Boolean(cat(r.id));
     const other = r.id === "__o" || (!known && r.id !== "" && Boolean(r.name));
-    const opts = items.map((c) => `<option value="${esc(c.id)}"${r.id === c.id ? " selected" : ""}>${esc(itemBoth(c))}</option>`).join("");
+    const one = (c) => `<option value="${esc(c.id)}"${r.id === c.id ? " selected" : ""}>${esc(itemBoth(c))}</option>`;
+    const cats = [...CATEGORIES.map((g) => g.id), ""];
+    const opts = cats.map((g) => { const l = items.filter((c) => (c.cat || "") === g || (g === "" && !CATEGORIES.some((x) => x.id === c.cat))); return l.length ? (g ? `<optgroup label="${esc(catName(g))}">${l.map(one).join("")}</optgroup>` : l.map(one).join("")) : ""; }).join("");
+    const pc = r.mode === "pc";
     return `<div class="item">
       <div class="head"><span class="no">#${i + 1}</span><button type="button" class="x" data-rm="${i}">${esc(t("remove"))}</button></div>
       <div class="field full"><label for="r-${i}-sel">${tri("item")}</label>
         <select id="r-${i}-sel" data-i="${i}" data-k="sel"><option value="">${esc(t("choose"))}</option>${opts}<option value="__o"${other ? " selected" : ""}>${esc(t("other"))}</option></select></div>
       ${other ? `<div class="field full"><label for="r-${i}-name">${tri("iname")}</label><input id="r-${i}-name" type="text" data-i="${i}" data-k="name" value="${esc(r.name)}"></div>` : ""}
-      <div class="field"><label for="r-${i}-bags">${tri("bags")}</label><input id="r-${i}-bags" type="number" min="0" step="any" inputmode="decimal" data-i="${i}" data-k="bags" value="${esc(r.bags)}"></div>
-      <div class="field"><label for="r-${i}-weight">${tri("weight")}</label><input id="r-${i}-weight" type="number" min="0" step="any" inputmode="decimal" data-i="${i}" data-k="weight" value="${esc(r.weight)}"></div>
+      <div class="field"><label for="r-${i}-bags">${tri(pc ? "pcs" : "bags")}</label><input id="r-${i}-bags" type="number" min="0" step="any" inputmode="decimal" data-i="${i}" data-k="bags" value="${esc(r.bags)}"></div>
+      <div class="field"${pc ? " hidden" : ""}><label for="r-${i}-weight">${tri("weight")}</label><input id="r-${i}-weight" type="number" min="0" step="any" inputmode="decimal" data-i="${i}" data-k="weight" value="${esc(r.weight)}"></div>
       <div class="field"><label for="r-${i}-rate">${tri("rate")}</label><input id="r-${i}-rate" type="number" min="0" step="any" inputmode="decimal" data-i="${i}" data-k="rate" value="${esc(r.rate)}"></div>
       <div class="field"><label for="r-${i}-mode">${tri("per")}</label>
-        <select id="r-${i}-mode" data-i="${i}" data-k="mode"><option value="kg"${r.mode !== "bag" ? " selected" : ""}>${esc(t("c_perkg"))}</option><option value="bag"${r.mode === "bag" ? " selected" : ""}>${esc(t("c_perbag"))}</option></select></div>
+        <select id="r-${i}-mode" data-i="${i}" data-k="mode"><option value="kg"${r.mode !== "bag" && !pc ? " selected" : ""}>${esc(t("c_perkg"))}</option><option value="bag"${r.mode === "bag" ? " selected" : ""}>${esc(t("c_perbag"))}</option><option value="pc"${pc ? " selected" : ""}>${esc(t("c_perpc"))}</option></select></div>
       <div class="foot2">
         <div class="field"><label for="r-${i}-date">${tri("idate")}</label><input id="r-${i}-date" type="date" data-i="${i}" data-k="date" value="${esc(r.date)}"></div>
         <span class="amt" id="r-${i}-amt">${rs(amount(r))}</span>
@@ -113,12 +117,13 @@ function slipHTML() {
   return `<header><div><strong>AB TRADERS</strong><small>${esc(t("tagline"))}</small></div><div class="r"><span class="ltr">${esc(shop.phone)}</span><br>${esc(shop.address)}</div></header>
   <div class="meta"><div><b>${esc(bill.cust || t("customer"))}</b></div><div style="text-align:end"><b class="ltr">${esc(dmy(bill.date))}</b>${tag}</div></div>
   ${rows.length ? `<table><thead><tr><th>${esc(t("item"))}</th><th>${esc(t("bags_s"))}</th><th>${esc(t("weight_s"))}</th><th>${esc(t("rate_s"))}</th><th>${esc(t("amount"))}</th></tr></thead><tbody>${
-    rows.map((r) => `<tr><td class="n">${esc(rowName(r))}<small class="ltr">${esc(sd(r.date))}</small></td><td class="ltr">${num(r.bags) ? nf(num(r.bags)) : ""}</td><td class="ltr">${num(r.weight) ? nf(num(r.weight)) : ""}</td><td class="ltr">${nf(num(r.rate))}<small>/${esc(t(r.mode === "bag" ? "c_bori" : "c_kg"))}</small></td><td class="ltr"><b>${rs(amount(r))}</b></td></tr>`).join("")}</tbody></table>
+    rows.map((r) => `<tr><td class="n">${esc(rowName(r))}<small class="ltr">${esc(sd(r.date))}</small></td><td class="ltr">${num(r.bags) ? nf(num(r.bags)) : ""}</td><td class="ltr">${num(r.weight) ? nf(num(r.weight)) : ""}</td><td class="ltr">${nf(num(r.rate))}<small>/${esc(t(unitKey(r.mode)))}</small></td><td class="ltr"><b>${rs(amount(r))}</b></td></tr>`).join("")}</tbody></table>
   <div class="sums">${line("sub", s.sub)}${num(bill.freight) ? line("freight", num(bill.freight)) : ""}${num(bill.prev) ? line("prev", num(bill.prev)) : ""}${line("total", s.total, "big")}${line("paid", num(bill.paid))}${line("bal", s.bal, "due")}</div>` : `<div class="empty">${esc(t("empty"))}</div>`}
   <footer>${esc(t("thanks"))}</footer>`;
 }
 addStrings({
-  bags_s: ["Bags", "بوری", "Bori"],
+  bags_s: ["Qty", "تعداد", "Qty"],
+  pcs: ["Pieces (adad)", "تعداد (عدد)", "Adad"],
   weight_s: ["Kg", "کلو", "Kg"],
   rate_s: ["Rate", "ریٹ", "Rate"],
   tagline: ["Dairy Feed Supplier", "ڈیری فیڈ سپلائر", "Dairy Feed Supplier"],
@@ -132,7 +137,7 @@ function billText() {
   L.push(dmy(bill.date) + " | " + t(typeKey()));
   if (bill.cust) L.push(t("customer") + ": " + bill.cust);
   L.push("");
-  live().forEach((r) => L.push(sd(r.date) + " " + rowName(r) + ": " + (num(r.bags) ? nf(num(r.bags)) + " " + t("c_bori") + ", " : "") + (num(r.weight) ? nf(num(r.weight)) + " " + t("c_kg") + " " : "") + "x " + nf(num(r.rate)) + "/" + t(r.mode === "bag" ? "c_bori" : "c_kg") + " = " + rs(amount(r))));
+  live().forEach((r) => L.push(sd(r.date) + " " + rowName(r) + ": " + (num(r.bags) ? nf(num(r.bags)) + " " + t(r.mode === "pc" ? "c_pc" : "c_bori") + ", " : "") + (num(r.weight) ? nf(num(r.weight)) + " " + t("c_kg") + " " : "") + "x " + nf(num(r.rate)) + "/" + t(unitKey(r.mode)) + " = " + rs(amount(r))));
   L.push("");
   L.push(t("sub") + ": " + rs(s.sub));
   if (num(bill.freight)) L.push(t("freight") + ": " + rs(num(bill.freight)));
@@ -187,17 +192,20 @@ $("#entry").addEventListener("input", (e) => {
       r.id = el.value;
       const c = cat(r.id);
       if (c) {
-        r.name = c.ro || c.en || ""; r.mode = c.mode === "bag" ? "bag" : "kg";
+        r.name = c.ro || c.en || ""; r.mode = c.mode === "bag" || c.mode === "pc" ? c.mode : "kg";
         r.rate = rateFor(c) || "";
-        if (r.wAuto && num(r.bags)) r.weight = num(r.bags) * bagKg(r);
+        if (r.mode !== "pc" && r.wAuto && num(r.bags)) r.weight = num(r.bags) * bagKg(r);
       } else r.name = "";
       renderRows();
       const f = $(`#r-${i}-${r.id === "__o" ? "name" : "bags"}`); if (f) f.focus();
     } else if (k === "bags") {
       r.bags = el.value;
-      if (r.wAuto) { r.weight = num(r.bags) ? num(r.bags) * bagKg(r) : ""; $(`#r-${i}-weight`).value = r.weight; }
+      if (r.wAuto && r.mode !== "pc") { r.weight = num(r.bags) ? num(r.bags) * bagKg(r) : ""; $(`#r-${i}-weight`).value = r.weight; }
     } else if (k === "weight") {
       r.weight = el.value; r.wAuto = el.value === "";
+    } else if (k === "mode") {
+      const was = r.mode; r.mode = el.value;
+      if (was === "pc" || r.mode === "pc") { renderRows(); }
     } else r[k] = el.value;
   } else if (el.id === "b-date") {
     const old = bill.date; bill.date = el.value;
@@ -266,47 +274,47 @@ async function drawBill() {
   const H = 135 + 100 + 44 + rows.length * rh + 24 + sums.length * rh + 90;
   const c = document.createElement("canvas"); c.width = W * 2; c.height = H * 2;
   const x = c.getContext("2d"); x.scale(2, 2); x.textBaseline = "middle";
-  const T = (str, px, y, al = "left", font = "400 16px " + F, col = "#10302a", ltr = false, maxW) => {
+  const T = (str, px, y, al = "left", font = "400 16px " + F, col = "#0c3323", ltr = false, maxW) => {
     x.font = font; x.fillStyle = col; x.direction = rtl && !ltr ? "rtl" : "ltr";
     if (rtl) { px = W - px; al = al === "left" ? "right" : al === "right" ? "left" : al; }
     x.textAlign = al; if (maxW) x.fillText(String(str), px, y, maxW); else x.fillText(String(str), px, y);
   };
   x.fillStyle = "#fff"; x.fillRect(0, 0, W, H);
-  x.fillStyle = "#10302a"; x.fillRect(0, 0, W, 130);
-  x.fillStyle = "#f0b310"; x.fillRect(0, 130, W, 5);
+  x.fillStyle = "#0c3323"; x.fillRect(0, 0, W, 130);
+  x.fillStyle = "#e3ae2b"; x.fillRect(0, 130, W, 5);
   T("AB TRADERS", 30, 58, "left", "900 52px " + D, "#edf0e6", true);
-  T(t("tagline"), 30, 102, "left", "600 16px " + F, "#f0b310");
+  T(t("tagline"), 30, 102, "left", "600 16px " + F, "#e3ae2b");
   if (shop.phone) T(shop.phone, 770, 52, "right", "600 17px " + LT, "#edf0e6", true);
   if (shop.address) T(shop.address, 770, 92, "right", "400 15px " + F, "#edf0e6", false, 380);
   let y = 175;
-  T(bill.cust || t("customer"), 30, y, "left", "700 20px " + F, "#10302a", false, 480);
-  T(dmy(bill.date), 770, y, "right", "700 18px " + LT, "#10302a", true);
+  T(bill.cust || t("customer"), 30, y, "left", "700 20px " + F, "#0c3323", false, 480);
+  T(dmy(bill.date), 770, y, "right", "700 18px " + LT, "#0c3323", true);
   T(t(typeKey()), 770, y + 36, "right", "700 15px " + F, bill.type === "udhaar" ? "#b23a2a" : "#2f7d4f");
   y = 255;
   const hf = "700 14px " + F, g = "#52645c";
   T(t("idate"), 30, y, "left", hf, g); T(t("item"), 120, y, "left", hf, g); T(t("bags_s"), 400, y, "right", hf, g);
   T(t("weight_s"), 500, y, "right", hf, g); T(t("rate_s"), 640, y, "right", hf, g); T(t("amount"), 770, y, "right", hf, g);
-  x.fillStyle = "#10302a"; x.fillRect(30, y + 20, W - 60, 2); y += 22;
+  x.fillStyle = "#0c3323"; x.fillRect(30, y + 20, W - 60, 2); y += 22;
   rows.forEach((r) => {
     y += rh / 2;
-    T(sd(r.date), 30, y, "left", "400 15px " + LT, "#10302a", true); T(rowName(r), 120, y, "left", "600 16px " + F, "#10302a", false, 220);
-    if (num(r.bags)) T(nf(num(r.bags)), 400, y, "right", "400 16px " + LT, "#10302a", true);
-    if (num(r.weight)) T(nf(num(r.weight)), 500, y, "right", "400 16px " + LT, "#10302a", true);
-    T(nf(num(r.rate)) + " /" + t(r.mode === "bag" ? "c_bori" : "c_kg"), 640, y, "right", "400 15px " + F, "#10302a", true);
-    T(rs(amount(r)), 770, y, "right", "700 16px " + LT, "#10302a", true);
+    T(sd(r.date), 30, y, "left", "400 15px " + LT, "#0c3323", true); T(rowName(r), 120, y, "left", "600 16px " + F, "#0c3323", false, 220);
+    if (num(r.bags)) T(nf(num(r.bags)), 400, y, "right", "400 16px " + LT, "#0c3323", true);
+    if (num(r.weight)) T(nf(num(r.weight)), 500, y, "right", "400 16px " + LT, "#0c3323", true);
+    T(nf(num(r.rate)) + " /" + t(unitKey(r.mode)), 640, y, "right", "400 15px " + F, "#0c3323", true);
+    T(rs(amount(r)), 770, y, "right", "700 16px " + LT, "#0c3323", true);
     y += rh / 2; x.fillStyle = "#cdd3c3"; x.fillRect(30, y, W - 60, 1);
   });
   y += 24;
   sums.forEach(([k, v, mode]) => {
-    if (mode === 2) { x.fillStyle = "#f0b310"; x.fillRect(400, y + 3, 380, rh - 6); }
-    if (mode === 1) { x.fillStyle = "#10302a"; x.fillRect(410, y, 360, 2); }
+    if (mode === 2) { x.fillStyle = "#e3ae2b"; x.fillRect(400, y + 3, 380, rh - 6); }
+    if (mode === 1) { x.fillStyle = "#0c3323"; x.fillRect(410, y, 360, 2); }
     const sz = mode === 2 ? "20px " : "17px ";
     T(t(k), 420, y + rh / 2, "left", (mode ? "700 " : "400 ") + sz + F);
-    T(rs(v), 770, y + rh / 2, "right", (mode ? "700 " : "400 ") + sz + LT, "#10302a", true);
+    T(rs(v), 770, y + rh / 2, "right", (mode ? "700 " : "400 ") + sz + LT, "#0c3323", true);
     y += rh;
   });
   T(t("thanks"), W / 2, H - 50, "center", "400 16px " + F, g);
-  T("abtraders.pk", W / 2, H - 22, "center", "600 14px " + LT, g, true);
+  T("abtrader.pk", W / 2, H - 22, "center", "600 14px " + LT, g, true);
   return c;
 }
 const toBlob = (c) => new Promise((r) => c.toBlob(r, "image/png"));

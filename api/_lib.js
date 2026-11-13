@@ -6,7 +6,7 @@ const REDIS_URL = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_
 const REDIS_TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || "";
 // Local preview only: keeps data in memory when no Redis is set.
 const MEMORY = process.env.ABT_MEMORY_DB === "1";
-const mem = (globalThis.__abtMem ??= { items: {}, seeded: false, shop: null });
+const mem = (globalThis.__abtMem ??= { items: {}, seeded: false, shop: null, cols: {} });
 
 export const dbReady = () => Boolean((REDIS_URL && REDIS_TOKEN) || MEMORY);
 const useRedis = () => Boolean(REDIS_URL && REDIS_TOKEN);
@@ -111,12 +111,60 @@ export function cleanItem(raw) {
   const ro = s(raw.ro, 60), ur = s(raw.ur, 60), en = s(raw.en, 60);
   if (!id || !(ro || ur || en)) return null;
   const img = typeof raw.img === "string" && /^data:image\/(jpeg|png|webp);base64,/.test(raw.img) && raw.img.length <= 400000 ? raw.img : "";
-  const out = { id, en, ro, ur, mode: raw.mode === "bag" ? "bag" : "kg", bagKg: n(raw.bagKg) || 40, cash: n(raw.cash), udhaar: n(raw.udhaar), img, order: n(raw.order) };
+  const mode = raw.mode === "bag" || raw.mode === "pc" ? raw.mode : "kg";
+  const pct = (v) => Math.min(100, n(v));
+  const cat = s(raw.cat, 30).toLowerCase().replace(/[^a-z0-9-]+/g, "");
+  const out = { id, cat, en, ro, ur, mode, bagKg: n(raw.bagKg) || (mode === "pc" ? 1 : 40), cash: n(raw.cash), udhaar: n(raw.udhaar), dm: pct(raw.dm), cp: pct(raw.cp), tdn: pct(raw.tdn), ndf: pct(raw.ndf), img, order: n(raw.order) };
   if (raw.desc && typeof raw.desc === "object") out.desc = { en: s(raw.desc.en, 300), ur: s(raw.desc.ur, 300), ro: s(raw.desc.ro, 300) };
   return out;
 }
 
-export const cleanShop = (raw) => ({ phone: s(raw?.phone, 30), whatsapp: s(raw?.whatsapp, 30), address: s(raw?.address, 200) });
+/* ---------- generic admin-edited lists (lab reports, formulas) ---------- */
+const imgOk = (v) => (typeof v === "string" && /^data:image\/(jpeg|png|webp);base64,/.test(v) && v.length <= 400000 ? v : "");
+const numOrBlank = (v) => (v === "" || v == null || !Number.isFinite(Number(v)) ? "" : Math.round(Number(v) * 100) / 100);
+const slug = (v) => s(v, 60).toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-+|-+$/g, "");
+
+export function cleanReport(raw) {
+  if (!raw || typeof raw !== "object") return null;
+  const title = s(raw.title, 120);
+  const id = slug(raw.id) || slug(title) || "r" + Date.now().toString(36);
+  if (!title) return null;
+  const out = { id, title, item: slug(raw.item), date: s(raw.date, 10), lab: s(raw.lab, 80), note: s(raw.note, 400), img: imgOk(raw.img) };
+  for (const k of ["dm", "cp", "fat", "fibre", "ash", "ndf", "tdn"]) out[k] = numOrBlank(raw[k]);
+  return out;
+}
+
+export function cleanFormula(raw) {
+  if (!raw || typeof raw !== "object") return null;
+  const en = s(raw.en, 80), ro = s(raw.ro, 80), ur = s(raw.ur, 80);
+  if (!(en || ro || ur)) return null;
+  const id = slug(raw.id) || slug(ro || en) || "f" + Date.now().toString(36);
+  const rows = (Array.isArray(raw.rows) ? raw.rows : []).slice(0, 30).map((r) => ({ id: slug(r?.id), kg: n(r?.kg) })).filter((r) => r.id && r.kg > 0);
+  return { id, en, ro, ur, note: s(raw.note, 400), bw: n(raw.bw) || 550, milk: n(raw.milk), fat: n(raw.fat) || 4, rows, order: n(raw.order) };
+}
+
+export const COLLECTIONS = {
+  reports: { key: "abt:reports", clean: cleanReport },
+  formulas: { key: "abt:formulas", clean: cleanFormula },
+};
+
+export async function colRead(name) {
+  const { key } = COLLECTIONS[name];
+  if (!dbReady()) return [];
+  const pairs = useRedis() ? pairsFrom(await cmd(["HGETALL", key])) : Object.entries(mem.cols[name] || {});
+  return parse(pairs);
+}
+export async function colWrite(name, list) {
+  const { key } = COLLECTIONS[name];
+  if (useRedis()) { const a = ["HSET", key]; list.forEach((i) => a.push(i.id, body(i))); await cmd(a); }
+  else { mem.cols[name] ||= {}; list.forEach((i) => (mem.cols[name][i.id] = body(i))); }
+}
+export async function colDelete(name, id) {
+  if (useRedis()) await cmd(["HDEL", COLLECTIONS[name].key, id]);
+  else delete (mem.cols[name] || {})[id];
+}
+
+export const cleanShop = (raw) => ({ phone: s(raw?.phone, 30), whatsapp: s(raw?.whatsapp, 30), email: s(raw?.email, 80), address: s(raw?.address, 200) });
 
 /* ---------- admin login ---------- */
 const secret = () => process.env.ADMIN_SECRET || process.env.ADMIN_PASSWORD || "";

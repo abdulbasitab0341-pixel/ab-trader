@@ -1,86 +1,100 @@
-import { $, esc, num, lang, addStrings, t, initLang, onLang, loadItems, loadShop, itemName, safeImg, waLink, DEFAULT_ITEMS } from "./common.js";
+import { $, esc, addStrings, t, initLang, onLang, loadShop, waLink, CATEGORIES, catName, catDesc } from "./common.js";
 
 addStrings({
-  h_products: ["Products", "مصنوعات", "Maal"],
-  h_contact: ["Contact", "رابطہ", "Rabta"],
   h_admin: ["Admin", "ایڈمن", "Admin"],
-  tagline: ["Dairy Feed Supplier", "ڈیری فیڈ سپلائر", "Dairy Feed Supplier"],
-  eyebrow: ["Dairy feed supplier · Pakistan", "ڈیری فیڈ سپلائر · پاکستان", "Dairy feed supplier · Pakistan"],
+  tagline: ["Livestock & Dairy Feed Raw Material Supplier", "مویشی اور ڈیری فیڈ خام مال سپلائر", "Livestock & Dairy Feed Raw Material Supplier"],
+  eyebrow: ["Livestock & Dairy Feed Raw Material Supplier", "مویشی اور ڈیری فیڈ خام مال سپلائر", "Livestock & Dairy Feed Raw Material Supplier"],
   h1a: ["Good feed.", "اچھا چارہ۔", "Acha chara."],
   h1b: ["Full weight.", "پورا تول۔", "Poora tol."],
   h1c: ["More milk.", "زیادہ دودھ۔", "Zyada doodh."],
   lede: [
-    "AB Traders supplies makai, chokar, macroni, khal, wanda and bagged feeds for cows and buffaloes, one bori or a full truck.",
-    "اے بی ٹریڈرز گائے اور بھینس کے لیے مکئی، چوکر، مکرونی، کھل، ونڈا اور بوری بند فیڈ فراہم کرتا ہے، ایک بوری ہو یا پورا ٹرک۔",
-    "AB Traders gaaye aur bhains ke liye makai, chokar, macroni, khal, wanda aur bori band feed supply karta hai, ek bori ho ya poora truck.",
+    "Trusted supplier of Karachi cattle and dairy farmers. Serving all over Pakistan. Export supply available.",
+    "کراچی کے مویشی اور ڈیری فارمرز کا قابلِ اعتماد سپلائر۔ پورے پاکستان میں سپلائی۔ ایکسپورٹ سپلائی دستیاب۔",
+    "Karachi ke cattle aur dairy farmers ka qabil-e-aitmaad supplier. Poore Pakistan mein supply. Export supply dastiyab.",
   ],
   cta_rates: ["Ask today's rate", "آج کا ریٹ پوچھیں", "Aaj ka rate poochein"],
-  cta_products: ["See the feed", "مال دیکھیں", "Maal dekhein"],
-  prod_h: ["What we stock", "ہمارا مال", "Hamara maal"],
-  prod_p: ["Sold by the kilo or by the bori (40 kg).", "کلو یا بوری (40 کلو) کے حساب سے دستیاب۔", "Kilo ya bori (40 kg) ke hisaab se dastiyab."],
-  why_h: ["How we do business", "ہمارا طریقہ کار", "Hamara tareeqa"],
-  why1: ["Full weight", "پورا تول", "Poora tol"],
-  why1p: ["Every bori is weighed in front of you.", "ہر بوری آپ کے سامنے تولی جاتی ہے۔", "Har bori aap ke samne toli jati hai."],
-  why2: ["Clean, fresh stock", "صاف اور تازہ مال", "Saaf, taza maal"],
-  why2p: ["Dry, clean grain and khal. No dust, no damp.", "خشک، صاف دانہ اور کھل۔ نہ مٹی، نہ نمی۔", "Khushk, saaf dana aur khal. Na mitti, na nami."],
-  why3: ["Any quantity", "ہر مقدار", "Har miqdaar"],
-  why3p: ["One bori for a single animal or a truck for the whole farm.", "ایک جانور کے لیے ایک بوری یا پورے فارم کے لیے ٹرک۔", "Ek janwar ke liye ek bori ya poore farm ke liye truck."],
-  why4: ["A written bill", "پکا بل", "Pakka bill"],
-  why4p: ["Every order gets a clear bill with rate, weight and balance.", "ہر آرڈر کا صاف بل، ریٹ، وزن اور بقایا کے ساتھ۔", "Har order ka saaf bill, rate, wazan aur baqaya ke sath."],
+  cta_products: ["See the products", "مال دیکھیں", "Maal dekhein"],
+  fa1: ["Karachi", "کراچی", "Karachi"],
+  fa1p: ["Trusted by cattle and dairy farmers", "مویشی اور ڈیری فارمرز کا اعتماد", "Cattle aur dairy farmers ka aitmaad"],
+  fa2: ["All Pakistan", "پورا پاکستان", "Poora Pakistan"],
+  fa2p: ["Supply across the country", "ملک بھر میں سپلائی", "Mulk bhar mein supply"],
+  fa3: ["Export", "ایکسپورٹ", "Export"],
+  fa3p: ["Export supply available", "ایکسپورٹ سپلائی دستیاب", "Export supply dastiyab"],
+  prod_h: ["What we supply", "ہم کیا سپلائی کرتے ہیں", "Hum kya supply karte hain"],
+  prod_p: ["35 products in 6 groups. Tap a group to see the items.", "6 گروپس میں 35 مصنوعات۔ دیکھنے کے لیے گروپ پر ٹیپ کریں۔", "6 groups mein 35 products. Dekhne ke liye group par tap karein."],
+  sv_h: ["Our services", "ہماری خدمات", "Hamari khidmaat"],
+  sv1: ["Animal feed raw materials supply", "جانوروں کی خوراک کا خام مال", "Janwaron ki khurak ka kham maal"],
+  sv2: ["Customized cattle and buffalo feed formulation", "گائے بھینس کے لیے حسبِ ضرورت فیڈ فارمولا", "Gaaye bhains ke liye hasb-e-zaroorat feed formula"],
+  sv3: ["Feed balancing and nutritional solutions", "فیڈ بیلنسنگ اور غذائی حل", "Feed balancing aur ghizai hal"],
+  sv4: ["Dairy feed ingredients and supplements", "ڈیری فیڈ اجزاء اور سپلیمنٹس", "Dairy feed ajza aur supplements"],
+  sv5: ["Bulk wholesale supply", "تھوک سپلائی", "Thok supply"],
+  sv6: ["Agricultural commodities trading", "زرعی اجناس کی تجارت", "Zaraai ajnaas ki tijarat"],
+  sv7: ["Cow mats and dairy farm products", "کاؤ میٹ اور ڈیری فارم مصنوعات", "Cow mat aur dairy farm products"],
+  sv8: ["Export supply services", "ایکسپورٹ سپلائی", "Export supply"],
+  sv9: ["Lab reports of our feed", "ہمارے فیڈ کی لیب رپورٹس", "Hamare feed ki lab reports"],
+  cm_h: ["Our commitment", "ہمارا عزم", "Hamara azm"],
+  cm_p: [
+    "We focus on reliable sourcing, consistent product quality, competitive pricing and customized feed solutions to support better livestock nutrition and dairy farm productivity.",
+    "ہم قابلِ بھروسہ خریداری، یکساں معیار، مناسب قیمت اور حسبِ ضرورت فیڈ حل پر توجہ دیتے ہیں تاکہ مویشیوں کی بہتر خوراک اور ڈیری فارم کی پیداوار بڑھے۔",
+    "Hum qabil-e-bharosa kharidari, yaksan miyaar, munasib qeemat aur hasb-e-zaroorat feed hal par tawajjo dete hain taake mawashi ki behtar khurak aur dairy farm ki paidawar barhe.",
+  ],
+  cm_p2: [
+    "We aim to build long-term business relationships by providing dependable supply and feed balancing solutions.",
+    "ہمارا مقصد قابلِ اعتماد سپلائی اور فیڈ بیلنسنگ کے ذریعے طویل مدتی کاروباری تعلقات بنانا ہے۔",
+    "Hamara maqsad qabil-e-aitmaad supply aur feed balancing ke zariye taweel muddati karobari talluqaat banana hai.",
+  ],
   faq_h: ["Common questions", "عام سوالات", "Aam sawalat"],
-  q1: ["Which dairy feed does AB Traders supply?", "اے بی ٹریڈرز کون سی ڈیری فیڈ فراہم کرتا ہے؟", "AB Traders kaun si dairy feed supply karta hai?"],
+  q1: ["What does AB Trader supply?", "اے بی ٹریڈر کیا سپلائی کرتا ہے؟", "AB Trader kya supply karta hai?"],
   a1: [
-    "Makai, gandum, dalia, chokar, macroni, khal binola, sarson ki khal, wanda, Master Feed, Nagori Feed, S.A Feed and mineral mixture for cows and buffaloes.",
-    "گائے اور بھینس کے لیے مکئی، گندم، دلیہ، چوکر، مکرونی، کھل بنولہ، سرسوں کی کھل، ونڈا، ماسٹر فیڈ، ناگوری فیڈ، ایس اے فیڈ اور منرل مکسچر۔",
-    "Gaaye aur bhains ke liye makai, gandum, dalia, chokar, macroni, khal binola, sarson ki khal, wanda, Master Feed, Nagori Feed, S.A Feed aur mineral mixture.",
+    "Wheat, maize, cracked grain, chokar, macroni, pulses and broken pulses, NDF, HDF and SA Pala, soybean meal, canola meal, sarso khal, pea products, maize gluten, toxin binder, yeast, DCP and cow mats.",
+    "گندم، مکئی، دلیہ، چوکر، مکرونی، دالیں اور کٹا، این ڈی ایف، ایچ ڈی ایف اور ایس اے پالا، سویابین میل، کینولا میل، سرسوں کھل، مٹر مصنوعات، مکئی گلوٹن، ٹاکسن بائنڈر، ییسٹ، ڈی سی پی اور کاؤ میٹ۔",
+    "Gandum, makai, dalya, chokar, macroni, daalein aur kutta, NDF, HDF aur SA Pala, soybean meal, canola meal, sarso khal, mattar products, maize gluten, toxin binder, yeast, DCP aur cow mat.",
   ],
-  q2: ["How is the feed sold?", "فیڈ کس حساب سے ملتی ہے؟", "Feed kis hisaab se milti hai?"],
-  a2: ["Loose items by the kilo. Bagged feed by the bori of 40 kg.", "کھلا مال کلو کے حساب سے۔ بوری بند فیڈ 40 کلو کی بوری کے حساب سے۔", "Khula maal kilo ke hisaab se. Bori band feed 40 kg ki bori ke hisaab se."],
-  q3: ["Do I get a bill with my order?", "کیا آرڈر کے ساتھ بل ملتا ہے؟", "Kya order ke sath bill milta hai?"],
+  q2: ["Do you help with feed balancing?", "کیا آپ فیڈ بیلنسنگ میں مدد کرتے ہیں؟", "Kya aap feed balancing mein madad karte hain?"],
+  a2: [
+    "Yes. Use the Feed Balancing page to check a ration for a cow or buffalo, or ask us for a customized formula.",
+    "جی ہاں۔ فیڈ بیلنسنگ کے صفحے پر گائے یا بھینس کا راشن چیک کریں، یا ہم سے حسبِ ضرورت فارمولا پوچھیں۔",
+    "Ji haan. Feed Balancing page par gaaye ya bhains ka ration check karein, ya hum se hasb-e-zaroorat formula poochein.",
+  ],
+  q3: ["How is the feed sold?", "مال کس حساب سے ملتا ہے؟", "Maal kis hisaab se milta hai?"],
   a3: [
-    "Yes. Every order comes with a written bill showing bags, weight, rate, freight and any balance.",
-    "جی ہاں۔ ہر آرڈر کے ساتھ لکھا ہوا بل ملتا ہے جس میں بوری، وزن، ریٹ، کرایہ اور بقایا درج ہوتا ہے۔",
-    "Ji haan. Har order ke sath likha hua bill milta hai jis mein bori, wazan, rate, kiraya aur baqaya darj hota hai.",
+    "Most items by the kilo. Chokar, Pala and Fazlani Atti by the bori (34, 40 or 48 kg). Cow mats per piece.",
+    "زیادہ تر مال کلو کے حساب سے۔ چوکر، پالا اور فضلانی آٹی بوری (34، 40 یا 48 کلو) کے حساب سے۔ کاؤ میٹ فی عدد۔",
+    "Zyada tar maal kilo ke hisaab se. Chokar, Pala aur Fazlani Atti bori (34, 40 ya 48 kg) ke hisaab se. Cow mat fi adad.",
   ],
-  contact_h: ["Contact AB Traders", "اے بی ٹریڈرز سے رابطہ", "AB Traders se rabta"],
+  q4: ["Do you supply outside Karachi or export?", "کیا کراچی سے باہر یا ایکسپورٹ سپلائی ہوتی ہے؟", "Kya Karachi se bahir ya export supply hoti hai?"],
+  a4: ["Yes. We serve all over Pakistan and export supply is available.", "جی ہاں۔ پورے پاکستان میں سپلائی اور ایکسپورٹ سپلائی دستیاب ہے۔", "Ji haan. Poore Pakistan mein supply aur export supply dastiyab hai."],
+  contact_h: ["Contact AB Trader", "اے بی ٹریڈر سے رابطہ", "AB Trader se rabta"],
   contact_p: ["Ask for today's rates and stock.", "آج کا ریٹ اور اسٹاک معلوم کریں۔", "Aaj ka rate aur stock poochein."],
-  c_phone: ["Phone", "فون", "Phone"],
+  c_mail: ["Email", "ای میل", "Email"],
   c_addr: ["Address", "پتہ", "Pata"],
   c_web: ["Website", "ویب سائٹ", "Website"],
   call: ["Call", "کال کریں", "Call karein"],
 });
 
-let items = DEFAULT_ITEMS, shop = { phone: "", whatsapp: "", address: "" };
+let shop = {};
 
-function renderGrid() {
-  const sub = (c) => (c.mode === "bag" ? `${t("c_perbag")} · ${num(c.bagKg) || 40} ${t("c_kg")}` : t("c_perkg"));
-  $("#grid").innerHTML = items.map((c) => {
-    const img = safeImg(c.img);
-    const d = c.desc && (c.desc[lang] || c.desc.en);
-    return `<article class="prod">${img ? `<img class="pic" src="${esc(img)}" alt="${esc(c.ro || c.en)}" loading="lazy">` : `<div class="pic ph" aria-hidden="true">${esc((c.ro || c.en || "AB").slice(0, 2).toUpperCase())}</div>`}
-      <h3>${esc(itemName(c))}</h3>
-      <div class="names"><span>${esc([c.en, c.ro].filter((v, i, a) => v && a.indexOf(v) === i).join(" · "))}</span><span>${esc(c.ur)}</span></div>
-      <span class="pill ${c.mode === "bag" ? "" : "kg"}">${esc(sub(c))}</span>
-      ${d ? `<p>${esc(d)}</p>` : ""}</article>`;
-  }).join("");
+function renderCats() {
+  $("#cats").innerHTML = CATEGORIES.map((g) => `<a class="cat-card" href="/products?cat=${g.id}"><b>${esc(catName(g.id))}</b><span>${esc(catDesc(g.id))}</span></a>`).join("");
 }
-
 function renderShop() {
-  $("#c-phone").textContent = shop.phone || t("c_pending");
+  const ph = shop.phone || shop.whatsapp;
+  $("#c-phone").textContent = ph || t("c_pending");
+  $("#c-phone").href = ph ? waLink(shop, "Assalam o Alaikum, aaj ka rate bata dein.") : "#contact";
+  $("#c-mail").textContent = shop.email || "";
+  $("#c-mail").href = shop.email ? "mailto:" + shop.email : "#contact";
+  $("#c-mail").parentElement.hidden = !shop.email;
   $("#c-addr").textContent = shop.address || t("c_pending");
-  const has = Boolean(shop.phone || shop.whatsapp);
-  const wa = has ? waLink(shop, "Assalam o Alaikum, aaj ka rate bata dein.") : "#contact";
+  const wa = ph ? waLink(shop, "Assalam o Alaikum, aaj ka rate bata dein.") : "#contact";
   $("#hero-wa").href = wa;
-  if (has) $("#hero-wa").target = "_blank";
-  $("#callbar").classList.toggle("on", has);
+  if (ph) $("#hero-wa").target = "_blank";
+  $("#callbar").classList.toggle("on", Boolean(ph));
   $("#cb-wa").href = wa;
-  $("#cb-call").href = shop.phone ? "tel:" + shop.phone.replace(/[^\d+]/g, "") : "#contact";
+  $("#cb-call").href = ph ? "tel:" + ph.replace(/[^\d+]/g, "") : "#contact";
 }
 
-onLang(() => { renderGrid(); renderShop(); });
+onLang(() => { renderCats(); renderShop(); });
 initLang();
-renderGrid();
-renderShop();
-
-loadItems().then((j) => { items = j.items; renderGrid(); });
+renderCats();
 loadShop().then((s) => { shop = s; renderShop(); });
+renderShop();

@@ -4,4 +4,4 @@ Disallow: /admin
 Disallow: /bill
 Disallow: /api/
 
-Sitemap: https://abtraders.pk/sitemap.xml
+Sitemap: https://abtrader.pk/sitemap.xml

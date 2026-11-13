@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Admin | AB Traders</title>
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#10302a">
-<link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#0c3323">
+<link rel="icon" href="/img/icon-32.png" sizes="32x32" type="image/png"><link rel="apple-touch-icon" href="/img/icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Hanken+Grotesk:wght@400;600;700&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
@@ -46,11 +46,14 @@
       <div class="seg" id="tabs" role="group">
         <button type="button" data-tab="rates" data-t="tab_rates">Rates</button>
         <button type="button" data-tab="items" data-t="tab_items">Items</button>
+        <button type="button" data-tab="reports" data-t="tab_reports">Lab reports</button>
+        <button type="button" data-tab="formulas" data-t="tab_formulas">Formulas</button>
         <button type="button" data-tab="shop" data-t="tab_shop">Shop</button>
       </div>
     </div>
     <div class="panelw">
       <div class="warn" id="warn" hidden></div>
+      <input id="adm-q" type="search" data-ph="search" autocomplete="off" aria-label="Search" style="margin-bottom:12px">
 
       <section id="t-rates" style="padding:0;display:grid;gap:12px">
         <p class="sub" style="margin:0" data-t="rates_help">Change today's rates here. Tap Save rates when done.</p>
@@ -62,10 +65,22 @@
         <div id="items" style="display:grid;gap:10px"></div>
       </section>
 
+      <section id="t-reports" style="padding:0;display:grid;gap:12px" hidden>
+        <button type="button" class="btn" id="new-report" data-t="new_report">+ New lab report</button>
+        <div id="reports" style="display:grid;gap:10px"></div>
+      </section>
+
+      <section id="t-formulas" style="padding:0;display:grid;gap:12px" hidden>
+        <p class="sub" style="margin:0" data-t="fm_help">Make a formula in Feed Balancing (you are logged in, so a Publish button shows there).</p>
+        <a class="btn" href="/balancing" data-t="fm_go">Open Feed Balancing</a>
+        <div id="formulas" style="display:grid;gap:10px"></div>
+      </section>
+
       <section id="t-shop" style="padding:0">
         <form class="card grid2" id="shopform" autocomplete="off">
           <div class="field full"><label for="s-phone" data-tri="phone"></label><input id="s-phone" type="tel" inputmode="tel" placeholder="03XX XXXXXXX"></div>
           <div class="field full"><label for="s-wa" data-tri="whatsapp"></label><input id="s-wa" type="tel" inputmode="tel" placeholder="03XX XXXXXXX"></div>
+          <div class="field full"><label for="s-mail" data-tri="email"></label><input id="s-mail" type="email" inputmode="email"></div>
           <div class="field full"><label for="s-addr" data-tri="address"></label><input id="s-addr" type="text"></div>
           <div class="full"><button type="submit" class="btn" data-t="save">Save</button></div>
         </form>
@@ -87,10 +102,16 @@
       <div class="field"><label for="i-ur" data-tri="n_ur"></label><input id="i-ur" type="text" dir="rtl"></div>
       <div class="field full"><label for="i-en" data-tri="n_en"></label><input id="i-en" type="text"></div>
       <div class="field"><label for="i-mode" data-tri="sold"></label>
-        <select id="i-mode"><option value="kg" data-t="c_perkg">Per kg</option><option value="bag" data-t="c_perbag">Per bori</option></select></div>
+        <select id="i-mode"><option value="kg" data-t="c_perkg">Per kg</option><option value="bag" data-t="c_perbag">Per bori</option><option value="pc" data-t="c_perpc">Per piece</option></select></div>
+      <div class="field full"><label for="i-cat" data-tri="cat"></label><select id="i-cat"></select></div>
       <div class="field"><label for="i-bagkg" data-tri="bagkg"></label><input id="i-bagkg" type="number" min="1" step="any" inputmode="decimal"></div>
       <div class="field"><label for="i-cash" data-tri="r_cash"></label><input id="i-cash" type="number" min="0" step="any" inputmode="decimal"></div>
       <div class="field"><label for="i-udhaar" data-tri="r_udhaar"></label><input id="i-udhaar" type="number" min="0" step="any" inputmode="decimal"></div>
+      <div class="field"><label for="i-dm">DM %</label><input id="i-dm" type="number" min="0" max="100" step="any" inputmode="decimal"></div>
+      <div class="field"><label for="i-cp">CP %</label><input id="i-cp" type="number" min="0" max="100" step="any" inputmode="decimal"></div>
+      <div class="field"><label for="i-tdn">TDN %</label><input id="i-tdn" type="number" min="0" max="100" step="any" inputmode="decimal"></div>
+      <div class="field"><label for="i-ndf">NDF %</label><input id="i-ndf" type="number" min="0" max="100" step="any" inputmode="decimal"></div>
+      <p class="sub full" style="grid-column:1/-1;margin:0;font-size:.82rem" data-t="nut_help">Nutrient values (for Feed Balancing) are typical estimates. Replace with lab values. CP and TDN are on dry matter.</p>
       <div class="field full"><label for="i-file" data-tri="picture"></label><input id="i-file" type="file" accept="image/*">
         <img id="prev" alt="" hidden></div>
     </div>
@@ -99,6 +120,32 @@
       <button type="button" class="btn line" id="i-cancel" data-t="cancel">Cancel</button>
       <button type="button" class="btn line" id="i-rmimg" data-t="rm_pic" hidden>Remove picture</button>
       <button type="button" class="btn danger" id="i-del" hidden></button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="rdlg">
+  <form id="rform" autocomplete="off">
+    <h3 data-t="new_report">Lab report</h3>
+    <div class="grid2">
+      <div class="field full"><label for="r-title" data-tri="r_title"></label><input id="r-title" type="text" required></div>
+      <div class="field full"><label for="r-item" data-tri="item"></label><select id="r-item"></select></div>
+      <div class="field"><label for="r-date" data-tri="idate"></label><input id="r-date" type="date"></div>
+      <div class="field"><label for="r-lab" data-tri="r_lab"></label><input id="r-lab" type="text"></div>
+      <div class="field"><label for="r-dm">DM %</label><input id="r-dm" type="number" min="0" max="100" step="any" inputmode="decimal"></div>
+      <div class="field"><label for="r-cp">CP %</label><input id="r-cp" type="number" min="0" max="100" step="any" inputmode="decimal"></div>
+      <div class="field"><label for="r-fat">Fat %</label><input id="r-fat" type="number" min="0" max="100" step="any" inputmode="decimal"></div>
+      <div class="field"><label for="r-fibre">Fibre %</label><input id="r-fibre" type="number" min="0" max="100" step="any" inputmode="decimal"></div>
+      <div class="field"><label for="r-ash">Ash %</label><input id="r-ash" type="number" min="0" max="100" step="any" inputmode="decimal"></div>
+      <div class="field"><label for="r-ndf">NDF %</label><input id="r-ndf" type="number" min="0" max="100" step="any" inputmode="decimal"></div>
+      <div class="field"><label for="r-tdn">TDN %</label><input id="r-tdn" type="number" min="0" max="100" step="any" inputmode="decimal"></div>
+      <div class="field full"><label for="r-note" data-tri="r_note"></label><input id="r-note" type="text"></div>
+      <div class="field full"><label for="r-file" data-tri="picture"></label><input id="r-file" type="file" accept="image/*"><img id="r-prev" alt="" hidden></div>
+      <label class="full" style="display:flex;gap:8px;align-items:center"><input id="r-apply" type="checkbox" style="width:auto;min-height:0"><span data-t="r_apply">Also copy DM, CP, NDF and TDN into the item</span></label>
+    </div>
+    <div class="acts">
+      <button type="submit" class="btn" data-t="save">Save</button>
+      <button type="button" class="btn line" id="r-cancel" data-t="cancel">Cancel</button>
     </div>
   </form>
 </dialog>
