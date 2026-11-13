@@ -1,0 +1,11 @@
+{
+  "name": "ab-trader",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AB Traders dairy feed website with Bill Maker and admin panel",
+  "type": "module",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "dev": "node dev-server.mjs"
+  }
+}

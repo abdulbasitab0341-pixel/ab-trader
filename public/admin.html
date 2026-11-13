@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ur-Latn" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Admin | AB Traders</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#10302a">
+<link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Hanken+Grotesk:wght@400;600;700&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+<style>
+.toast{position:fixed;left:14px;right:14px;bottom:84px;z-index:40;background:var(--ink);color:var(--paper);border-left:5px solid var(--maize);border-radius:8px;padding:10px 14px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.toast.err{border-left-color:var(--stamp)}
+</style>
+</head>
+<body>
+
+<header class="top"><div class="in">
+  <a class="back" href="/" data-t="home">Home</a>
+  <strong class="brand ttl" style="font-size:1.3rem"><span data-t="admin">Admin</span></strong>
+  <span class="spacer"></span>
+  <button type="button" class="btn ghost sm" id="logout" data-t="logout" hidden>Logout</button>
+  <div class="lang" role="group" aria-label="Language">
+    <button type="button" data-l="en">English</button>
+    <button type="button" data-l="ur">اردو</button>
+    <button type="button" data-l="ro">Roman</button>
+  </div>
+</div></header>
+
+<main>
+  <form class="login" id="login" autocomplete="off">
+    <h1 data-t="admin">Admin</h1>
+    <div class="field">
+      <label for="pw" data-tri="password"></label>
+      <input id="pw" type="password" autocomplete="current-password" required>
+    </div>
+    <button type="submit" class="btn" data-t="login">Login</button>
+    <p class="msg err" id="login-msg" role="alert"></p>
+  </form>
+
+  <div id="app" hidden>
+    <div class="tabs">
+      <div class="seg" id="tabs" role="group">
+        <button type="button" data-tab="rates" data-t="tab_rates">Rates</button>
+        <button type="button" data-tab="items" data-t="tab_items">Items</button>
+        <button type="button" data-tab="shop" data-t="tab_shop">Shop</button>
+      </div>
+    </div>
+    <div class="panelw">
+      <div class="warn" id="warn" hidden></div>
+
+      <section id="t-rates" style="padding:0;display:grid;gap:12px">
+        <p class="sub" style="margin:0" data-t="rates_help">Change today's rates here. Tap Save rates when done.</p>
+        <div id="rates" style="display:grid;gap:12px"></div>
+      </section>
+
+      <section id="t-items" style="padding:0;display:grid;gap:12px">
+        <button type="button" class="btn" id="new-item" data-t="new_item">+ New item</button>
+        <div id="items" style="display:grid;gap:10px"></div>
+      </section>
+
+      <section id="t-shop" style="padding:0">
+        <form class="card grid2" id="shopform" autocomplete="off">
+          <div class="field full"><label for="s-phone" data-tri="phone"></label><input id="s-phone" type="tel" inputmode="tel" placeholder="03XX XXXXXXX"></div>
+          <div class="field full"><label for="s-wa" data-tri="whatsapp"></label><input id="s-wa" type="tel" inputmode="tel" placeholder="03XX XXXXXXX"></div>
+          <div class="field full"><label for="s-addr" data-tri="address"></label><input id="s-addr" type="text"></div>
+          <div class="full"><button type="submit" class="btn" data-t="save">Save</button></div>
+        </form>
+      </section>
+    </div>
+
+    <div class="savebar" id="ratebar">
+      <span class="msg" id="ratecount"></span>
+      <button type="button" class="btn" id="save-rates" data-t="save_rates" disabled>Save rates</button>
+    </div>
+  </div>
+</main>
+
+<dialog id="dlg">
+  <form id="iform" autocomplete="off">
+    <h3 id="dlg-title"></h3>
+    <div class="grid2">
+      <div class="field"><label for="i-ro" data-tri="n_ro"></label><input id="i-ro" type="text"></div>
+      <div class="field"><label for="i-ur" data-tri="n_ur"></label><input id="i-ur" type="text" dir="rtl"></div>
+      <div class="field full"><label for="i-en" data-tri="n_en"></label><input id="i-en" type="text"></div>
+      <div class="field"><label for="i-mode" data-tri="sold"></label>
+        <select id="i-mode"><option value="kg" data-t="c_perkg">Per kg</option><option value="bag" data-t="c_perbag">Per bori</option></select></div>
+      <div class="field"><label for="i-bagkg" data-tri="bagkg"></label><input id="i-bagkg" type="number" min="1" step="any" inputmode="decimal"></div>
+      <div class="field"><label for="i-cash" data-tri="r_cash"></label><input id="i-cash" type="number" min="0" step="any" inputmode="decimal"></div>
+      <div class="field"><label for="i-udhaar" data-tri="r_udhaar"></label><input id="i-udhaar" type="number" min="0" step="any" inputmode="decimal"></div>
+      <div class="field full"><label for="i-file" data-tri="picture"></label><input id="i-file" type="file" accept="image/*">
+        <img id="prev" alt="" hidden></div>
+    </div>
+    <div class="acts">
+      <button type="submit" class="btn" data-t="save">Save</button>
+      <button type="button" class="btn line" id="i-cancel" data-t="cancel">Cancel</button>
+      <button type="button" class="btn line" id="i-rmimg" data-t="rm_pic" hidden>Remove picture</button>
+      <button type="button" class="btn danger" id="i-del" hidden></button>
+    </div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status" hidden></div>
+<script type="module" src="/js/admin.js"></script>
+</body>
+</html>

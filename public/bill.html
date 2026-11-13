@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ur-Latn" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bill Maker | AB Traders</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#10302a">
+<link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Hanken+Grotesk:wght@400;600;700&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<header class="top"><div class="in">
+  <a class="back" href="/" data-t="home">Home</a>
+  <strong class="brand ttl" style="font-size:1.3rem"><span data-t="c_bill">Bill Maker</span></strong>
+  <span class="spacer"></span>
+  <div class="lang" role="group" aria-label="Language">
+    <button type="button" data-l="en">English</button>
+    <button type="button" data-l="ur">اردو</button>
+    <button type="button" data-l="ro">Roman</button>
+  </div>
+</div></header>
+
+<main class="app" id="app" data-view="entry">
+  <div class="seg views" id="views" role="group">
+    <button type="button" data-view="entry" data-t="tab_entry">Enter items</button>
+    <button type="button" data-view="preview" data-t="tab_bill">View bill</button>
+  </div>
+
+  <section id="entry">
+    <div class="card grid2">
+      <div class="field full">
+        <label for="b-cust" data-tri="cust"></label>
+        <input id="b-cust" type="text" autocomplete="off" data-ph="optional">
+      </div>
+      <div class="field">
+        <label for="b-date" data-tri="bdate"></label>
+        <input id="b-date" type="date">
+      </div>
+      <div class="field">
+        <span id="lbl-type" data-tri="btype"></span>
+        <div class="seg" id="btype" role="group" aria-labelledby="lbl-type">
+          <button type="button" data-type="cash" data-t="c_cash">Cash</button>
+          <button type="button" data-type="udhaar" data-t="c_udhaar">Credit</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="rows" style="display:grid;gap:12px"></div>
+    <button type="button" class="add" id="add" data-t="add">+ Add another item</button>
+
+    <div class="card grid2">
+      <div class="field">
+        <label for="b-freight" data-tri="freight"></label>
+        <input id="b-freight" type="number" min="0" step="any" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label for="b-prev" data-tri="prev"></label>
+        <input id="b-prev" type="number" step="any" inputmode="decimal">
+      </div>
+      <div class="field full">
+        <label for="b-paid" data-tri="paid"></label>
+        <input id="b-paid" type="number" min="0" step="any" inputmode="decimal">
+      </div>
+    </div>
+
+    <div class="card sumcard" id="sumcard"></div>
+    <button type="button" class="btn line js-new" data-t="new_bill">New bill</button>
+  </section>
+
+  <section id="preview">
+    <div class="acts">
+      <button type="button" class="btn full" id="share" data-t="share">Share bill</button>
+      <button type="button" class="btn line" id="save" data-t="save_img">Save picture</button>
+      <button type="button" class="btn line" id="print" data-t="print">Print / PDF</button>
+      <button type="button" class="btn line" id="wa" data-t="wa">WhatsApp text</button>
+      <button type="button" class="btn line" id="copy" data-t="copy">Copy text</button>
+      <button type="button" class="btn dark full js-new" data-t="new_bill">New bill</button>
+    </div>
+    <p class="msg" id="status" role="status"></p>
+    <div class="slip" id="slip"></div>
+    <div class="hist" id="hist"></div>
+  </section>
+</main>
+
+<div class="dock" id="dock">
+  <div class="tot"><small data-t="bal">Balance due</small><b id="dock-amt">Rs 0</b></div>
+  <button type="button" class="btn" id="dock-btn">View bill</button>
+</div>
+
+<script type="module" src="/js/bill.js"></script>
+</body>
+</html>

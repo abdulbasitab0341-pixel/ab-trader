@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /bill
+Disallow: /api/
+
+Sitemap: https://abtraders.pk/sitemap.xml

@@ -1,0 +1,125 @@
+import { DEFAULT_ITEMS, DEFAULT_SHOP } from "./defaults.js";
+export { DEFAULT_ITEMS, DEFAULT_SHOP };
+
+export const $ = (s, r = document) => r.querySelector(s);
+export const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+export const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+export const num = (v) => { const n = parseFloat(v); return Number.isFinite(n) ? n : 0; };
+export const nf = (n) => (Math.round(n * 100) / 100).toLocaleString("en-US");
+export const rs = (n) => "Rs " + Math.round(n).toLocaleString("en-US");
+export const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
+export const dmy = (s) => (s ? s.split("-").reverse().join("-") : "");
+export const sd = (s) => { if (!s) return ""; const p = s.split("-"); return `${+p[2]}-${+p[1]}-${p[0].slice(2)}`; };
+export const safeImg = (s) => (typeof s === "string" && /^data:image\//.test(s) ? s : "");
+
+export const store = {
+  get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* private mode */ } },
+  del(k) { try { localStorage.removeItem(k); } catch { /* ignore */ } },
+};
+
+/* ---------- language: en, ur, ro ---------- */
+const LANGS = ["en", "ur", "ro"];
+export let lang = store.get("abt-lang");
+if (!LANGS.includes(lang)) lang = "ro";
+const listeners = [];
+export const onLang = (fn) => listeners.push(fn);
+export function setLang(l) {
+  lang = l; store.set("abt-lang", l);
+  applyLang();
+  listeners.forEach((fn) => fn(l));
+}
+
+// Each string is [English, Urdu, Roman Urdu].
+const S = {};
+export const addStrings = (o) => Object.assign(S, o);
+export function t(k) {
+  const v = S[k];
+  if (!v) return k;
+  return v[LANGS.indexOf(lang)] ?? v[0];
+}
+// Label with all three languages: the chosen one large, the others small.
+export function tri(k) {
+  const v = S[k];
+  if (!v) return esc(k);
+  const i = LANGS.indexOf(lang);
+  const main = v[i];
+  const seen = new Set([main.toLowerCase()]);
+  const rest = [];
+  [0, 1, 2].filter((j) => j !== i).forEach((j) => { const x = v[j]; if (!seen.has(x.toLowerCase())) { seen.add(x.toLowerCase()); rest.push(x); } });
+  return `<span class="lab"><span class="l1">${esc(main)}</span>${rest.length ? `<span class="l2">${esc(rest.join(" · "))}</span>` : ""}</span>`;
+}
+
+addStrings({
+  home: ["Home", "ہوم", "Home"],
+  c_bill: ["Bill Maker", "بل میکر", "Bill Maker"],
+  c_cash: ["Cash", "نقد", "Naqad"],
+  c_udhaar: ["Credit", "ادھار", "Udhaar"],
+  c_perkg: ["Per kg", "فی کلو", "Fi kg"],
+  c_perbag: ["Per bori", "فی بوری", "Fi bori"],
+  c_kg: ["kg", "کلو", "kg"],
+  c_bori: ["bori", "بوری", "bori"],
+  c_pending: ["To be added", "جلد شامل ہوگا", "Jald add hoga"],
+});
+
+export function applyLang() {
+  const root = document.documentElement;
+  root.lang = lang === "ro" ? "ur-Latn" : lang;
+  root.dir = lang === "ur" ? "rtl" : "ltr";
+  $$("[data-t]").forEach((el) => (el.textContent = t(el.dataset.t)));
+  $$("[data-tri]").forEach((el) => (el.innerHTML = tri(el.dataset.tri)));
+  $$("[data-ph]").forEach((el) => (el.placeholder = t(el.dataset.ph)));
+  $$(".lang button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.l === lang)));
+}
+
+export function initLang() {
+  $$(".lang button").forEach((b) => b.addEventListener("click", () => setLang(b.dataset.l)));
+  applyLang();
+}
+
+/* ---------- item helpers ---------- */
+export const itemName = (c) => (lang === "ur" ? c.ur || c.ro || c.en : c.ro || c.en || c.ur);
+export const itemBoth = (c) => (lang === "ur" ? [c.ur, c.ro] : [c.ro, c.ur]).filter(Boolean).join(" · ");
+
+/* ---------- data from the API (falls back to built-in items) ---------- */
+export async function api(path, { method = "GET", body, token } = {}) {
+  const r = await fetch(path, {
+    method,
+    headers: { ...(body ? { "Content-Type": "application/json" } : {}), ...(token ? { Authorization: "Bearer " + token } : {}) },
+    body: body ? JSON.stringify(body) : undefined,
+    cache: "no-store",
+  });
+  let j = {};
+  try { j = await r.json(); } catch { /* not json */ }
+  if (!r.ok) throw Object.assign(new Error(j.error || "http " + r.status), { status: r.status, code: j.error });
+  return j;
+}
+
+export async function loadItems({ noimg = false } = {}) {
+  try {
+    const j = await api("/api/items" + (noimg ? "?noimg=1" : ""));
+    if (Array.isArray(j.items)) {
+      store.set("abt-items", j.items.map((i) => ({ ...i, img: "" })));
+      return j;
+    }
+    throw new Error("bad");
+  } catch {
+    return { items: store.get("abt-items") || DEFAULT_ITEMS, source: "offline", db: false };
+  }
+}
+
+export async function loadShop() {
+  try {
+    const j = await api("/api/shop");
+    store.set("abt-shop", j.shop);
+    return { ...DEFAULT_SHOP, ...j.shop };
+  } catch {
+    return { ...DEFAULT_SHOP, ...(store.get("abt-shop") || {}) };
+  }
+}
+
+export const waLink = (shop, text = "") => {
+  const d = String(shop.whatsapp || shop.phone || "").replace(/\D/g, "");
+  const n = d.startsWith("0") ? "92" + d.slice(1) : d;
+  return `https://wa.me/${n}${text ? "?text=" + encodeURIComponent(text) : ""}`;
+};
