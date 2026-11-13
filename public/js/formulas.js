@@ -22,7 +22,7 @@ function render() {
   $("#list").innerHTML = list.length ? `<div class="grid reports">${list.map((f) => {
     const rows = f.rows.map((r) => { const it = pool().find((x) => x.id === r.id); return { ...(it || {}), kg: r.kg, label: it ? itemName(it) : r.id }; });
     const a = analyze(rows, requirement(f));
-    return `<article class="prod"><h3>${esc(nm(f))}</h3>
+    return `<article class="prod"><h2 class="t">${esc(nm(f))}</h2>
       <div class="names"><span>${esc(t("f_for"))} ${nf(f.milk)} ${esc(t("f_milk"))}</span></div>
       <ul class="fl">${rows.map((r) => `<li><span>${esc(r.label)}</span><b class="ltr">${nf(r.kg)} kg</b></li>`).join("")}</ul>
       ${a.dmKg ? `<p class="sub">${esc(t("f_prot"))} ${nf(a.cpPct)}% · NEL ${nf(a.nelS)} Mcal</p>` : ""}

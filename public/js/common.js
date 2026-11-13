@@ -66,6 +66,8 @@ addStrings({
   n_formula: ["Formulas", "فارمولے", "Formulas"],
   n_balance: ["Feed Balancing", "فیڈ بیلنسنگ", "Feed Balancing"],
   n_bill: ["Bill Maker", "بل میکر", "Bill Maker"],
+  n_contact: ["Contact", "رابطہ", "Rabta"],
+  n_order: ["Order now", "آرڈر کریں", "Order karein"],
   c_all: ["All", "سب", "Sab"],
   c_pending: ["To be added", "جلد شامل ہوگا", "Jald add hoga"],
 });
@@ -90,15 +92,32 @@ export const catName = (id) => { const c = CATEGORIES.find((x) => x.id === id); 
 export const catDesc = (id) => { const c = CATEGORIES.find((x) => x.id === id); return c ? c.d[lang] || c.d.en : ""; };
 
 /* ---------- shared header: <header class="top" id="top"> ---------- */
-const NAV = [["/products", "n_products"], ["/lab-reports", "n_lab"], ["/formulas", "n_formula"], ["/balancing", "n_balance"], ["/bill", "n_bill"]];
+const NAV = [["/products", "n_products"], ["/lab-reports", "n_lab"], ["/formulas", "n_formula"], ["/balancing", "n_balance"]];
 export function mountHeader() {
   const h = document.getElementById("top");
   if (!h) return;
   const here = location.pathname.replace(/\/$/, "").replace(/\.html$/, "");
-  h.innerHTML = `<div class="in"><a class="brand" href="/" aria-label="AB Traders"><img src="/img/mark.png" width="36" height="36" alt="">AB <b>Traders</b></a>
-  <nav class="nav" aria-label="Main">${NAV.map(([u, k]) => `<a href="${u}" data-t="${k}"${here === u ? ' aria-current="page"' : ""}></a>`).join("")}</nav>
-  <span class="spacer"></span>
-  <div class="lang" role="group" aria-label="Language"><button type="button" data-l="en">English</button><button type="button" data-l="ur">اردو</button><button type="button" data-l="ro">Roman</button></div></div>`;
+  h.innerHTML = `<div class="in"><a class="brand" href="/" aria-label="AB Trader"><img src="/img/mark.png" width="38" height="38" alt=""><span class="bw">AB <b>TRADER</b></span></a>
+  <nav class="nav" id="nav" aria-label="Main">${NAV.map(([u, k]) => `<a href="${u}" data-t="${k}"${here === u ? ' aria-current="page"' : ""}></a>`).join("")}<a class="navbtn" href="/bill" data-t="n_bill"></a><a class="navcta" href="/products" data-t="n_order"></a></nav>
+  <div class="hr"><div class="lang" role="group" aria-label="Language"><button type="button" data-l="en">English</button><button type="button" data-l="ur">اردو</button><button type="button" data-l="ro">Roman</button></div>
+  <button type="button" class="menu" aria-expanded="false" aria-controls="nav" aria-label="Menu"><span></span></button></div></div>`;
+  const btn = h.querySelector(".menu"), nav = h.querySelector(".nav");
+  const set = (open) => { h.classList.toggle("open", open); btn.setAttribute("aria-expanded", String(open)); };
+  btn.addEventListener("click", (e) => { e.stopPropagation(); set(!h.classList.contains("open")); });
+  nav.addEventListener("click", (e) => { if (e.target.closest("a")) set(false); });
+  document.addEventListener("click", (e) => { if (!h.contains(e.target)) set(false); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") set(false); });
+  const onScroll = () => { h.classList.toggle("scrolled", window.scrollY > 8); };
+  window.addEventListener("scroll", onScroll, { passive: true }); onScroll();
+}
+
+/* ---------- scroll-reveal animations (skipped for reduced motion) ---------- */
+export function reveal(root = document) {
+  const els = [...root.querySelectorAll(".rv:not(.in)")];
+  if (!els.length) return;
+  if (!("IntersectionObserver" in window) || matchMedia("(prefers-reduced-motion: reduce)").matches) { els.forEach((e) => e.classList.add("in")); return; }
+  const io = new IntersectionObserver((en) => en.forEach((x) => { if (x.isIntersecting) { x.target.classList.add("in"); io.unobserve(x.target); } }), { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
+  els.forEach((e) => io.observe(e));
 }
 
 /* ---------- item helpers ---------- */

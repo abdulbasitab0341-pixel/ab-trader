@@ -26,7 +26,7 @@ function render() {
   $("#list").innerHTML = l.length ? `<div class="grid reports">${l.map((r) => {
     const it = items.find((i) => i.id === r.item);
     const vals = KEYS.filter((k) => r[k] !== "" && r[k] != null).map((k) => `<div><small>${esc(t("l_" + k))}</small><b>${esc(r[k])}%</b></div>`).join("");
-    return `<article class="prod rep"><h3>${esc(r.title)}</h3>
+    return `<article class="prod rep"><h2 class="t">${esc(r.title)}</h2>
       <div class="names"><span>${esc([it ? itemName(it) : "", r.lab, r.date].filter(Boolean).join(" · "))}</span></div>
       ${vals ? `<div class="vals">${vals}</div>` : ""}${r.note ? `<p>${esc(r.note)}</p>` : ""}
       ${r.hasImg ? `<button type="button" class="btn sm line" data-pic="${esc(r.id)}">${esc(t("l_pic"))}</button><div class="repimg" id="img-${esc(r.id)}"></div>` : ""}</article>`;

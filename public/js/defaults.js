@@ -67,4 +67,4 @@ export const DEFAULT_ITEMS = T.map(([id, cat, en, ro, ur, mode, bagKg, cash, dm,
   id, cat, en, ro, ur, mode, bagKg, cash, udhaar: 0, dm, cp, tdn, ndf, img: `/img/p/${id}.svg`, order: (i + 1) * 10,
 }));
 
-export const DEFAULT_SHOP = { phone: "+92 314 3942492", whatsapp: "+92 314 3942492", email: "info@abtrader.pk", address: "" };
+export const DEFAULT_SHOP = { phone: "+92 314 3942492", whatsapp: "+92 314 3942492", email: "info@abtrader.pk", address: "Bhains Colony, Road No. 6, Karachi" };

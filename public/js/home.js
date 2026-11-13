@@ -1,4 +1,4 @@
-import { $, esc, addStrings, t, initLang, onLang, loadShop, waLink, CATEGORIES, catName, catDesc } from "./common.js";
+import { $, esc, addStrings, t, initLang, onLang, loadShop, waLink, CATEGORIES, catName, catDesc, reveal } from "./common.js";
 
 addStrings({
   h_admin: ["Admin", "ایڈمن", "Admin"],
@@ -12,7 +12,27 @@ addStrings({
     "کراچی کے مویشی اور ڈیری فارمرز کا قابلِ اعتماد سپلائر۔ پورے پاکستان میں سپلائی۔ ایکسپورٹ سپلائی دستیاب۔",
     "Karachi ke cattle aur dairy farmers ka qabil-e-aitmaad supplier. Poore Pakistan mein supply. Export supply dastiyab.",
   ],
-  cta_rates: ["Ask today's rate", "آج کا ریٹ پوچھیں", "Aaj ka rate poochein"],
+  cta_rates: ["Ask rate on WhatsApp", "واٹس ایپ پر ریٹ پوچھیں", "WhatsApp par rate poochein"],
+  st_h: ["Order in 3 simple steps", "صرف 3 آسان مراحل میں آرڈر", "Sirf 3 aasaan marhale mein order"],
+  st_p: ["No phone calls and no waiting in line.", "نہ فون کالز، نہ قطار میں انتظار۔", "Na phone call, na qatar mein intezar."],
+  st1: ["Choose your items", "اپنا مال چنیں", "Apna maal chunein"],
+  st1p: ["Open Products, pick what you need and set the quantity.", "مصنوعات کھولیں، جو چاہیے چنیں اور مقدار لکھیں۔", "Products kholein, jo chahiye chunein aur miqdaar likhein."],
+  st2: ["Send on WhatsApp", "واٹس ایپ پر بھیجیں", "WhatsApp par bhejein"],
+  st2p: ["Tap one button. Your order list reaches us instantly.", "ایک بٹن دبائیں۔ آپ کی لسٹ فوراً ہم تک پہنچ جاتی ہے۔", "Ek button dabayein. Aap ki list foran hum tak pohanch jati hai."],
+  st3: ["We confirm and deliver", "ہم تصدیق کر کے پہنچاتے ہیں", "Hum tasdeeq kar ke pohanchate hain"],
+  st3p: ["We confirm today's rate and deliver to your farm or godown.", "ہم آج کا ریٹ بتا کر آپ کے فارم یا گودام تک پہنچاتے ہیں۔", "Hum aaj ka rate bata kar aap ke farm ya godown tak pohanchate hain."],
+  st_cta: ["Start your order", "آرڈر شروع کریں", "Order shuru karein"],
+  cat_open: ["See items", "مال دیکھیں", "Maal dekhein"],
+  tl_h: ["Tools for your farm", "آپ کے فارم کے لیے ٹولز", "Aap ke farm ke liye tools"],
+  tl_p: ["Free tools to feed better and bill faster.", "بہتر خوراک اور تیز بل کے لیے مفت ٹولز۔", "Behtar khurak aur tez bill ke liye muft tools."],
+  tl1: ["Feed Balancing", "فیڈ بیلنسنگ", "Feed Balancing"],
+  tl1p: ["Check a ration and find the cheapest mix.", "راشن چیک کریں اور سب سے سستا مکس معلوم کریں۔", "Ration check karein aur sab se sasta mix maloom karein."],
+  tl2: ["Lab Reports", "لیب رپورٹس", "Lab Reports"],
+  tl2p: ["Tested protein, fat, fibre and moisture.", "جانچا ہوا پروٹین، چکنائی، ریشہ اور نمی۔", "Jaancha hua protein, chikna'i, resha aur nami."],
+  tl3: ["Formulas", "فارمولے", "Formulas"],
+  tl3p: ["Ready ration plans for cows and buffaloes.", "گائے بھینس کے لیے تیار راشن پلان۔", "Gaaye bhains ke liye tayyar ration plan."],
+  tl4: ["Bill Maker", "بل میکر", "Bill Maker"],
+  tl4p: ["Make a clear bill in seconds. Cash or udhaar.", "سیکنڈوں میں صاف بل بنائیں۔ نقد یا ادھار۔", "Seconds mein saaf bill banayein. Naqad ya udhaar."],
   cta_products: ["See the products", "مال دیکھیں", "Maal dekhein"],
   fa1: ["Karachi", "کراچی", "Karachi"],
   fa1p: ["Trusted by cattle and dairy farmers", "مویشی اور ڈیری فارمرز کا اعتماد", "Cattle aur dairy farmers ka aitmaad"],
@@ -74,8 +94,9 @@ addStrings({
 
 let shop = {};
 
+const CAT_IMG = { grains: "gandum", byproducts: "chokar", pala: "ndf-pala", protein: "soybean-meal", additives: "yeast", mats: "cow-mat" };
 function renderCats() {
-  $("#cats").innerHTML = CATEGORIES.map((g) => `<a class="cat-card" href="/products?cat=${g.id}"><b>${esc(catName(g.id))}</b><span>${esc(catDesc(g.id))}</span></a>`).join("");
+  $("#cats").innerHTML = CATEGORIES.map((g) => `<a class="cat-card" href="/products#${g.id}"><div class="im"><img src="/img/p/${CAT_IMG[g.id]}.svg" width="640" height="400" alt="${esc(g.en)}" loading="lazy" decoding="async"></div><div class="tx"><b>${esc(catName(g.id))}</b><span>${esc(catDesc(g.id))}</span><em>${esc(t("cat_open"))}</em></div></a>`).join("");
 }
 function renderShop() {
   const ph = shop.phone || shop.whatsapp;
@@ -96,5 +117,6 @@ function renderShop() {
 onLang(() => { renderCats(); renderShop(); });
 initLang();
 renderCats();
+reveal();
 loadShop().then((s) => { shop = s; renderShop(); });
 renderShop();

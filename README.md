@@ -39,3 +39,7 @@ Open http://localhost:3000. Admin password is `admin123`. Data is kept in memory
 Admin: Rates, Items (group, rates, nutrient values, picture), Lab reports, Formulas, Shop (phone, WhatsApp, email, address).
 Nutrient values in `public/js/defaults.js` are typical estimates; blank = unknown. Replace with lab values (admin > Lab reports can copy them into the item).
 Formulas are published from the Feed Balancing page while logged in to /admin.
+
+## SEO notes
+sitemap.xml, robots.txt, llms.txt, canonical + OG tags, JSON-LD (LocalBusiness, FAQ, ItemList, breadcrumbs), product list prerendered in HTML, security headers (HSTS) in vercel.json. /bill and /admin are noindex on purpose.
+Search Console: add https://abtrader.pk as a property, verify via the DNS TXT record (GoDaddy), then submit https://abtrader.pk/sitemap.xml. Set www to redirect to abtrader.pk in Vercel > Domains.
