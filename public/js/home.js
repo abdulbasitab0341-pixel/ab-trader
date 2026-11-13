@@ -96,7 +96,7 @@ let shop = {};
 
 const CAT_IMG = { grains: "gandum", byproducts: "chokar", pala: "ndf-pala", protein: "soybean-meal", additives: "yeast", mats: "cow-mat" };
 function renderCats() {
-  $("#cats").innerHTML = CATEGORIES.map((g) => `<a class="cat-card" href="/products#${g.id}"><div class="im"><img src="/img/p/${CAT_IMG[g.id]}.svg" width="640" height="400" alt="${esc(g.en)}" loading="lazy" decoding="async"></div><div class="tx"><b>${esc(catName(g.id))}</b><span>${esc(catDesc(g.id))}</span><em>${esc(t("cat_open"))}</em></div></a>`).join("");
+  $("#cats").innerHTML = CATEGORIES.map((g) => `<a class="cat-card" href="/products#${g.id}"><div class="im"><img src="/img/p/${CAT_IMG[g.id]}.${g.id === "pala" ? "svg" : "webp"}" width="640" height="400" alt="${esc(g.en)}" loading="lazy" decoding="async"></div><div class="tx"><b>${esc(catName(g.id))}</b><span>${esc(catDesc(g.id))}</span><em>${esc(t("cat_open"))}</em></div></a>`).join("");
 }
 function renderShop() {
   const ph = shop.phone || shop.whatsapp;

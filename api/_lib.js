@@ -110,7 +110,7 @@ export function cleanItem(raw) {
   const id = s(raw.id, 60).toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-+|-+$/g, "");
   const ro = s(raw.ro, 60), ur = s(raw.ur, 60), en = s(raw.en, 60);
   if (!id || !(ro || ur || en)) return null;
-  const img = typeof raw.img === "string" && /^\/img\/p\/[a-z0-9-]+\.svg$/.test(raw.img) ? raw.img : typeof raw.img === "string" && /^data:image\/(jpeg|png|webp);base64,/.test(raw.img) && raw.img.length <= 400000 ? raw.img : "";
+  const img = typeof raw.img === "string" && /^\/img\/p\/[a-z0-9-]+\.(svg|webp)$/.test(raw.img) ? raw.img : typeof raw.img === "string" && /^data:image\/(jpeg|png|webp);base64,/.test(raw.img) && raw.img.length <= 400000 ? raw.img : "";
   const mode = raw.mode === "bag" || raw.mode === "pc" ? raw.mode : "kg";
   const pct = (v) => Math.min(100, n(v));
   const cat = s(raw.cat, 30).toLowerCase().replace(/[^a-z0-9-]+/g, "");

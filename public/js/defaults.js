@@ -63,8 +63,9 @@ const T = [
   ["cow-mat", "mats", "Rubber Cow Mat / Dairy Cow Mat", "Cow Mat", "کاؤ میٹ", "pc", 1, 0, 0, 0, 0, 0],
 ];
 
+const PHOTOS = new Set(["gandum", "gandum-dalya", "makai", "makai-dalya", "makai-powder", "mongi", "masoor", "chokar", "kala-chora", "rang-last-chora", "bahir-ghutli-chora", "macroni", "chana-atti", "mash-kutta", "moth-kutta", "masoor-kutta", "mong-kutta", "soybean-meal", "soybean-chilka", "canola-meal", "sarso-meal", "sarso-khal", "mattar-atti", "mattar-chilka", "maize-gluten-30", "toxin-binder", "yeast", "dcp", "cow-mat"]);
 export const DEFAULT_ITEMS = T.map(([id, cat, en, ro, ur, mode, bagKg, cash, dm, cp, tdn, ndf], i) => ({
-  id, cat, en, ro, ur, mode, bagKg, cash, udhaar: 0, dm, cp, tdn, ndf, img: `/img/p/${id}.svg`, order: (i + 1) * 10,
+  id, cat, en, ro, ur, mode, bagKg, cash, udhaar: 0, dm, cp, tdn, ndf, img: `/img/p/${id}.${PHOTOS.has(id) ? "webp" : "svg"}`, order: (i + 1) * 10,
 }));
 
 export const DEFAULT_SHOP = { phone: "+92 314 3942492", whatsapp: "+92 314 3942492", email: "info@abtrader.pk", address: "Bhains Colony, Road No. 6, Karachi" };

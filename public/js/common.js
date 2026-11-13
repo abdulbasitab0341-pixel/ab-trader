@@ -10,7 +10,7 @@ export const rs = (n) => "Rs " + Math.round(n).toLocaleString("en-US");
 export const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
 export const dmy = (s) => (s ? s.split("-").reverse().join("-") : "");
 export const sd = (s) => { if (!s) return ""; const p = s.split("-"); return `${+p[2]}-${+p[1]}-${p[0].slice(2)}`; };
-export const safeImg = (s) => (typeof s === "string" && (/^data:image\//.test(s) || /^\/img\/p\/[a-z0-9-]+\.svg$/.test(s)) ? s : "");
+export const safeImg = (s) => (typeof s === "string" && (/^data:image\//.test(s) || /^\/img\/p\/[a-z0-9-]+\.(svg|webp)$/.test(s)) ? s : "");
 
 export const store = {
   get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
