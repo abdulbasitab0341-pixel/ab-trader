@@ -25,6 +25,7 @@ async function cmd(args) {
 const ITEMS = "abt:items";
 const SEEDED = "abt:seeded";
 const SHOP = "abt:shop";
+const RATES_AT = "abt:ratesAt";
 
 function pairsFrom(result) {
   if (Array.isArray(result)) {
@@ -87,6 +88,19 @@ export async function writeItems(list) {
 export async function deleteItem(id) {
   if (useRedis()) await cmd(["HDEL", ITEMS, id]);
   else delete mem.items[id];
+}
+
+export async function touchRates() {
+  const v = String(Date.now());
+  if (useRedis()) await cmd(["SET", RATES_AT, v]);
+  else mem.ratesAt = v;
+}
+
+export async function readRatesAt() {
+  try {
+    const v = dbReady() ? (useRedis() ? await cmd(["GET", RATES_AT]) : mem.ratesAt) : null;
+    return v ? Number(v) : 0;
+  } catch { return 0; }
 }
 
 export async function readShop() {

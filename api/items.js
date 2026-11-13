@@ -1,4 +1,4 @@
-import { dbReady, readItems, seedIfNeeded, writeItems, deleteItem, cleanItem, isAdmin, readBody } from "./_lib.js";
+import { dbReady, readItems, seedIfNeeded, writeItems, deleteItem, touchRates, readRatesAt, cleanItem, isAdmin, readBody } from "./_lib.js";
 
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
@@ -9,6 +9,7 @@ export default async function handler(req, res) {
       return res.status(200).json({
         source,
         db: dbReady(),
+        updated: await readRatesAt(),
         items: lite ? items.map(({ img, ...rest }) => ({ ...rest, img: "" })) : items,
       });
     }
@@ -22,6 +23,7 @@ export default async function handler(req, res) {
       if (!list.length) return res.status(400).json({ error: "bad item" });
       await seedIfNeeded();
       await writeItems(list);
+      await touchRates();
       return res.status(200).json({ ok: true });
     }
 

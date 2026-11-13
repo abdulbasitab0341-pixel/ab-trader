@@ -294,3 +294,17 @@ html[lang=ur] .pub .cgrid small{letter-spacing:0;font-size:.9rem}
   .pub .hr{gap:6px}
 }
 .pub .hero .eyebrow{margin-top:10px}
+
+/* ---------- rates page ---------- */
+.pub .stamp{margin-top:10px;color:#8a6410;font-weight:700}
+.pub .ratebtns{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0 6px}
+.pub .rategrp{margin-top:22px}
+.pub .rategrp h2{font:800 1.25rem var(--serif,Fraunces,serif);color:#0b3a29;margin-bottom:8px}
+.pub .rtbl{background:#fff;border:1px solid rgba(11,58,41,.14);border-radius:14px;overflow:hidden}
+.pub .rr{display:grid;grid-template-columns:1fr 92px 92px;gap:8px;align-items:center;padding:11px 14px;border-top:1px solid rgba(11,58,41,.08)}
+.pub .rr:first-child{border-top:0}
+.pub .rr.hd{background:#0b3a29;color:#fff;font-weight:700;font-size:.9rem}
+.pub .rr small{display:block;color:#6b7a72;font-size:.8rem}
+.pub .rr .n{text-align:right;font-weight:800;font-variant-numeric:tabular-nums}
+.pub .rr.hd span:not(:first-child){text-align:right}
+@media print{.top,.foot,.tools,.ratebtns,.callbar{display:none!important}.pagehead{background:none!important;color:#000;border:0}.rr.hd{background:#eee;color:#000}}

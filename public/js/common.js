@@ -62,6 +62,7 @@ addStrings({
   c_perpc: ["Per piece", "فی عدد", "Fi adad"],
   c_pc: ["pc", "عدد", "adad"],
   n_products: ["Products", "مصنوعات", "Maal"],
+  n_rates: ["Today's Rates", "آج کے ریٹ", "Aaj ke Rate"],
   n_lab: ["Lab Reports", "لیب رپورٹس", "Lab Reports"],
   n_formula: ["Formulas", "فارمولے", "Formulas"],
   n_balance: ["Feed Balancing", "فیڈ بیلنسنگ", "Feed Balancing"],
@@ -92,7 +93,7 @@ export const catName = (id) => { const c = CATEGORIES.find((x) => x.id === id); 
 export const catDesc = (id) => { const c = CATEGORIES.find((x) => x.id === id); return c ? c.d[lang] || c.d.en : ""; };
 
 /* ---------- shared header: <header class="top" id="top"> ---------- */
-const NAV = [["/products", "n_products"], ["/lab-reports", "n_lab"], ["/formulas", "n_formula"], ["/balancing", "n_balance"]];
+const NAV = [["/products", "n_products"], ["/rates", "n_rates"], ["/lab-reports", "n_lab"], ["/formulas", "n_formula"], ["/balancing", "n_balance"]];
 export function mountHeader() {
   const h = document.getElementById("top");
   if (!h) return;
